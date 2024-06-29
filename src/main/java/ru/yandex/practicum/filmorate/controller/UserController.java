@@ -5,10 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,14 +26,16 @@ public class UserController {
         if (newUser.getName() == null || newUser.getName().isBlank()) {
             newUser.setName(newUser.getLogin());
         }
-        log.info("Записи присвоен id {}",newUser.getId());
+        log.info("Записи присвоен id {}", newUser.getId());
         users.put(newUser.getId(), newUser);
         return newUser;
     }
+
     @GetMapping
     public Collection<User> getAllUsers() {
         return users.values();
     }
+
     @PutMapping
     public User update(@RequestBody User editedUser) {
         log.info("Загружаем и валидируем внесенные изменения");
@@ -61,6 +61,7 @@ public class UserController {
         oldUser.setLogin(editedUser.getLogin());
         return oldUser;
     }
+
     public boolean validateUser(User user) {
         boolean isUserValidationSuccess = false;
         if (user.getEmail() != null && user.getEmail().isBlank()) {
@@ -81,7 +82,7 @@ public class UserController {
             log.error(errorMessage);
             throw e;
         }
-        if (user.getLogin() ==null || user.getLogin().isBlank())  {
+        if (user.getLogin() == null || user.getLogin().isBlank()) {
             String errorMessage = "логин не может быть пустым";
             ValidationException e = new ValidationException(errorMessage);
             log.error(errorMessage);
@@ -96,6 +97,7 @@ public class UserController {
         isUserValidationSuccess = true;
         return isUserValidationSuccess;
     }
+
     private long getNextId() {
         long currentMaxId = users.keySet()
                 .stream()
