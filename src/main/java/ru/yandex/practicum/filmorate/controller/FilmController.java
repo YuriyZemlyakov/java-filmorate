@@ -16,7 +16,7 @@ import java.util.Map;
 @RequestMapping("/films")
 public class FilmController {
     private Map<Long, Film> films = new HashMap<>();
-    private final static Logger log = (Logger) LoggerFactory.getLogger(FilmController.class);
+    private final Logger log = (Logger) LoggerFactory.getLogger(FilmController.class);
 
     @PostMapping
     public Film create(@RequestBody Film newFilm) {
