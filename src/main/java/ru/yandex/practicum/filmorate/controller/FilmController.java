@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import ch.qos.logback.classic.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -14,9 +13,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/films")
+@Slf4j
 public class FilmController {
     private Map<Long, Film> films = new HashMap<>();
-    private final Logger log = (Logger) LoggerFactory.getLogger(FilmController.class);
+    //private final Logger log = (Logger) LoggerFactory.getLogger(FilmController.class);
 
     @PostMapping
     public Film create(@RequestBody Film newFilm) {

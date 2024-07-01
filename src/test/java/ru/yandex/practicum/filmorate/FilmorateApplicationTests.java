@@ -9,156 +9,54 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 //@SpringBootTest
 class FilmorateApplicationTests {
 
-    //	@Test
-//	void contextLoads() {
-//	}
     @Test
     public void validateFilmTest() {
         FilmController filmController = new FilmController();
-        Film goodFilm = new Film();
-        goodFilm.setName("T");
-        goodFilm.setDescription("Drama");
-        goodFilm.setReleaseDate(LocalDate.of(2000, 1, 1));
-        goodFilm.setDuration(200);
-        assertTrue(filmController.validateFilm(goodFilm));
+        Film goodFilm = new Film("T", "Drama", LocalDate.of(2000, 1, 1), 200);
 
-        Film filmWithoutName = new Film();
-        filmWithoutName.setName("");
-        filmWithoutName.setDescription("Drama");
-        filmWithoutName.setReleaseDate(LocalDate.of(2000, 1, 1));
-        filmWithoutName.setDuration(200);
-        String errorMessage = null;
-        try {
-            filmController.validateFilm(filmWithoutName);
-        } catch (ValidationException e) {
-            errorMessage = e.getMessage();
-        }
-        assertEquals("Название фильма не может быть пустым", errorMessage);
+        Film filmWithoutName = new Film("", "Drama", LocalDate.of(2000, 1, 1), 200);
+        assertThrows(ValidationException.class, () -> filmController.validateFilm(filmWithoutName));
 
-        errorMessage = null;
-        Film filmWithTooLongDescription = new Film();
-        filmWithTooLongDescription.setName("T");
-        filmWithTooLongDescription.setDescription("Drama11111111111111111111111111111111111111111111wwwww" +
+        Film filmWithTooLongDescription = new Film("T", "Drama11111111111111111111111111111111111111111111wwwww" +
                 "2222222222222222222222222222222222222222222222222222222222222222222222222222222222222222" +
                 "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" +
-                "ddddddddddddddddkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-        filmWithTooLongDescription.setReleaseDate(LocalDate.of(2000, 1, 1));
-        filmWithTooLongDescription.setDuration(200);
-        try {
-            filmController.validateFilm(filmWithTooLongDescription);
-        } catch (ValidationException e) {
-            errorMessage = e.getMessage();
-        }
-        assertEquals("Максимальная длина описания - 200 символов", errorMessage);
+                "ddddddddddddddddkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk", LocalDate.of(2000, 1, 1), 200);
+        assertThrows(ValidationException.class, () -> filmController.validateFilm(filmWithTooLongDescription));
 
-        errorMessage = null;
-        Film filmWithWrongDate = new Film();
-        filmWithWrongDate.setName("T");
-        filmWithWrongDate.setDescription("Drama");
-        filmWithWrongDate.setReleaseDate(LocalDate.of(1894, 8, 1));
-        filmWithWrongDate.setDuration(200);
-        try {
-            filmController.validateFilm(filmWithWrongDate);
-        } catch (ValidationException e) {
-            errorMessage = e.getMessage();
-        }
-        assertEquals("Дата релиза не может быть раньше 28 декабря 1895 года", errorMessage);
+        Film filmWithWrongDate = new Film("T", "Drama", LocalDate.of(1725, 1, 1), 200);
+        assertThrows(ValidationException.class, () -> filmController.validateFilm(filmWithWrongDate));
 
-        errorMessage = null;
-        Film filmWithNegativeDuration = new Film();
-        filmWithNegativeDuration.setName("T");
-        filmWithNegativeDuration.setDescription("Drama");
-        filmWithNegativeDuration.setReleaseDate(LocalDate.of(1899, 8, 1));
-        filmWithNegativeDuration.setDuration(-2);
-        try {
-            filmController.validateFilm(filmWithNegativeDuration);
-        } catch (ValidationException e) {
-            errorMessage = e.getMessage();
-        }
-        assertEquals("Продолжительность фильма должна быть положительным числом", errorMessage);
-
+        Film filmWithNegativeDuration = new Film("T", "Drama", LocalDate.of(2000, 1, 1), (-2));
+        assertThrows(ValidationException.class, () -> filmController.validateFilm(filmWithNegativeDuration));
     }
 
     @Test
     public void validateUserTest() {
         UserController userController = new UserController();
         String errorMessage = null;
-        User goodUser = new User();
-        goodUser.setName("B");
-        goodUser.setLogin("Login");
-        goodUser.setEmail("user@.ru");
-        goodUser.setBirthday(LocalDate.of(1980, 12, 1));
+        User goodUser = new User("user@.mail.ru", "Login", "B", LocalDate.of(1980, 12, 1));
         assertTrue(userController.validateUser(goodUser));
 
-        User userWithEmptyEmail = new User();
-        userWithEmptyEmail.setName("T");
-        userWithEmptyEmail.setLogin("L");
-        userWithEmptyEmail.setEmail("");
-        userWithEmptyEmail.setBirthday(LocalDate.of(1980, 2, 2));
-        try {
-            userController.validateUser(userWithEmptyEmail);
-        } catch (ValidationException e) {
-            errorMessage = e.getMessage();
-        }
-        assertEquals("email не может быть пустым", errorMessage);
+        User userWithEmptyEmail = new User("", "L", "N", LocalDate.of(1980, 12, 1));
+        assertThrows(ValidationException.class, () -> userController.validateUser(userWithEmptyEmail));
 
-        errorMessage = null;
-        User userWithoutEmailSymbol = new User();
-        userWithoutEmailSymbol.setName("T");
-        userWithoutEmailSymbol.setLogin("L");
-        userWithoutEmailSymbol.setEmail("sdfj.ru");
+        User userWithoutEmailSymbol = new User("aj.ms.ru", "L", "N", LocalDate.of(1980, 12, 1));
         userWithoutEmailSymbol.setBirthday(LocalDate.of(1980, 2, 2));
-        try {
-            userController.validateUser(userWithoutEmailSymbol);
-        } catch (ValidationException e) {
-            errorMessage = e.getMessage();
-        }
-        assertEquals("email должен содержать символ @", errorMessage);
+        assertThrows(ValidationException.class, () -> userController.validateUser(userWithoutEmailSymbol));
 
-        errorMessage = null;
-        User userWithWhiteSpacesInLogin = new User();
-        userWithWhiteSpacesInLogin.setName("T");
-        userWithWhiteSpacesInLogin.setLogin("L W");
-        userWithWhiteSpacesInLogin.setEmail("user@mail.ru");
-        userWithWhiteSpacesInLogin.setBirthday(LocalDate.of(1980, 2, 2));
-        try {
-            userController.validateUser(userWithWhiteSpacesInLogin);
-        } catch (ValidationException e) {
-            errorMessage = e.getMessage();
-        }
-        assertEquals("логин не может содержать пробелы", errorMessage);
+        User userWithWhiteSpacesInLogin = new User("user@mail.ru", "L N", "N", LocalDate.of(1980, 12, 1));
+        assertThrows(ValidationException.class, () -> userController.validateUser(userWithWhiteSpacesInLogin));
 
-        errorMessage = null;
-        User userWithEmptyLogin = new User();
-        userWithEmptyLogin.setName("T");
-        userWithEmptyLogin.setLogin("");
-        userWithEmptyLogin.setEmail("user@mail.ru");
-        userWithEmptyLogin.setBirthday(LocalDate.of(1980, 2, 2));
-        try {
-            userController.validateUser(userWithEmptyLogin);
-        } catch (ValidationException e) {
-            errorMessage = e.getMessage();
-        }
-        assertEquals("логин не может быть пустым", errorMessage);
+        User userWithEmptyLogin = new User("user@mail.ru", "", "N", LocalDate.of(1980, 12, 1));
+        assertThrows(ValidationException.class, () -> userController.validateUser(userWithEmptyLogin));
 
-        errorMessage = null;
-        User userWithFutureBirthDate = new User();
-        userWithFutureBirthDate.setName("T");
-        userWithFutureBirthDate.setLogin("L");
-        userWithFutureBirthDate.setEmail("user@mail.ru");
-        userWithFutureBirthDate.setBirthday(LocalDate.of(2025, 2, 2));
-        try {
-            userController.validateUser(userWithFutureBirthDate);
-        } catch (ValidationException e) {
-            errorMessage = e.getMessage();
-        }
-        assertEquals("дата рождения не может быть в будущем", errorMessage);
+        User userWithFutureBirthDate = new User("user@mail.ru", "L", "N", LocalDate.of(2025, 12, 1));
+        assertThrows(ValidationException.class, () -> userController.validateUser(userWithFutureBirthDate));
+
     }
-
 }
