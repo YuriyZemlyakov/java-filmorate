@@ -1,12 +1,10 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
@@ -23,6 +21,7 @@ public class InMemoryUserStorage implements UserStorage {
     public User getUser(Long userId) {
         return users.get(userId);
     }
+
     @Override
     public Collection<User> getAllUsers() {
         return users.values();
@@ -64,6 +63,7 @@ public class InMemoryUserStorage implements UserStorage {
         oldUser.setLogin(editedUser.getLogin());
         return oldUser;
     }
+
     @Override
     public Long getNextId() {
         long currentMaxId = users.keySet()
