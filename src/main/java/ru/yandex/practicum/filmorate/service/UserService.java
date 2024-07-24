@@ -44,14 +44,10 @@ public class UserService {
     }
 
     public void addFriend(Long userId1, Long userId2) {
+        userNotNullValidate(userId1);
+        userNotNullValidate(userId2);
         User user1 = userStorage.getUser(userId1);
         User user2 = userStorage.getUser(userId2);
-        if (!userStorage.getAllUsers().contains(user1)) {
-            throw new NotFoundException("Пользователь с таким id не найден");
-        }
-        if (!userStorage.getAllUsers().contains(user2)) {
-            throw new NotFoundException("Пользователь с таким id не найден");
-        }
         if (user1.getFriends().contains(userId2)) {
             throw new NotFoundException("Друг с таким id уже добавлен");
         }
@@ -66,45 +62,35 @@ public class UserService {
     }
 
     public void deleteFriend(Long userId1, Long userId2) {
+        userNotNullValidate(userId1);
+        userNotNullValidate(userId2);
         User user1 = userStorage.getUser(userId1);
-        if (user1 == null) {
-            throw new NotFoundException("Пользователь с таким id не найден");
-        }
-//        if (!user1.getFriends().contains(userId2)) {
-//            throw new NotFoundException("Друг с таким id не найден");
-//        }
         User user2 = userStorage.getUser(userId2);
-        if (user2 == null) {
-            throw new NotFoundException("Пользователь с таким id не найден");
-        }
-//        if (!user2.getFriends().contains(userId1)) {
-//            throw new NotFoundException("Друг с таким id не найден");
-//        }
         user1.getFriends().remove(userId2);
         user2.getFriends().remove(userId1);
     }
 
     public List<User> getFriends(long userId) {
-        if (userStorage.getUser(userId) == null) {
-            throw new NotFoundException("Пользователь с таким id не найден");
-        }
+        userNotNullValidate(userId);
         return userStorage.getUser(userId).getFriends().stream()
                 .map(friendId -> userStorage.getUser(friendId))
                 .collect(Collectors.toList());
     }
 
     public List<User> getCommonFriends(long userId1, long userId2) {
-        if (userStorage.getUser(userId1) == null) {
-            throw new NotFoundException("Пользователь с таким id не найден");
-        }
-        if (userStorage.getUser(userId2) == null) {
-            throw new NotFoundException("Пользователь с таким id не найден");
-        }
+        userNotNullValidate(userId1);
+        userNotNullValidate(userId2);
         return userStorage.getUser(userId1).getFriends().stream()
                 .filter(friendId -> userStorage.getUser(userId2).getFriends().contains(friendId))
                 .map(userId -> userStorage.getUser(userId))
                 .collect(Collectors.toList());
 
+    }
+
+    private void userNotNullValidate(long userId) {
+        if (userStorage.getUser(userId) == null) {
+            throw new NotFoundException("Пользователь с таким id не найден");
+        }
     }
 
 

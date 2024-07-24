@@ -39,23 +39,15 @@ public class FilmService {
     }
 
     public void addLike(Long filmId, Long userId) {
-        if (filmStorage.getFilm(filmId) == null) {
-            throw new NotFoundException("Фильм с таким id не найден");
-        }
-        if (userStorage.getUser(userId) == null) {
-            throw new NotFoundException("Пользователь с таким id  не найден");
-        }
+        filmNotNullValidate(filmId);
+        userNonNullValidate(userId);
         filmStorage.getFilm(filmId).getLikes().add(userId);
         log.trace(String.format("Лайк от пользователя {} добавлен фильму {}", userId, filmId));
     }
 
     public void deleteLike(Long filmId, Long userId) {
-        if (filmStorage.getFilm(filmId) == null) {
-            throw new NotFoundException("Фильм с таким id не найден");
-        }
-        if (userStorage.getUser(userId) == null) {
-            throw new NotFoundException("Пользователь с таким id  не найден");
-        }
+        filmNotNullValidate(filmId);
+        filmNotNullValidate(filmId);
         filmStorage.getFilm(filmId).getLikes().remove(filmId);
         log.trace("Лайк пользователя {} фильму {} удален", userId, filmId);
     }
@@ -69,6 +61,18 @@ public class FilmService {
 
     public Collection<Film> getAllFilms() {
         return filmStorage.getAllFilms();
+    }
+
+    private void filmNotNullValidate(long filmId) {
+        if (filmStorage.getFilm(filmId) == null) {
+            throw new NotFoundException("Фильм с таким id не найден");
+        }
+    }
+
+    private void userNonNullValidate(long userId) {
+        if (userStorage.getUser(userId) == null) {
+            throw new NotFoundException("Пользователь с таким id  не найден");
+        }
     }
 
 
