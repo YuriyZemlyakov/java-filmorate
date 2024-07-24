@@ -47,7 +47,7 @@ public class FilmService {
 
     public void deleteLike(Long filmId, Long userId) {
         filmNotNullValidate(filmId);
-        filmNotNullValidate(filmId);
+        userNonNullValidate(userId);
         filmStorage.getFilm(filmId).getLikes().remove(filmId);
         log.trace("Лайк пользователя {} фильму {} удален", userId, filmId);
     }
