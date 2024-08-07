@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -8,12 +9,15 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validator.UserValidator;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class UserService {
+    @Qualifier("dbUserStorage")
     private final UserStorage userStorage;
 
     public UserService(UserStorage userStorage) {
@@ -23,7 +27,6 @@ public class UserService {
     public User addUser(User newUser) {
         log.info("Загружаем и валидируем нового юзера");
         UserValidator.validateUser(newUser);
-        newUser.setId(userStorage.getNextId());
         if (newUser.getName() == null || newUser.getName().isBlank()) {
             newUser.setName(newUser.getLogin());
         }
@@ -38,9 +41,16 @@ public class UserService {
         log.info("Сохраняем обновленные данные");
         return userStorage.update(editedUser);
     }
+    public void deleteUser(Long userId) {
+        userNotNullValidate(userId);
+        userStorage.delete(userId);
+    }
 
     public Collection<User> getAllUsers() {
         return userStorage.getAllUsers();
+    }
+    public User getUser(long userId) {
+        return userStorage.getUser((userId));
     }
 
     public void addFriend(Long userId1, Long userId2) {
