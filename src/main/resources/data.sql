@@ -11,5 +11,5 @@ INSERT INTO mpa(name,description) VALUES ('PG', 'Детям фильм реко�
 INSERT INTO mpa(name,description) VALUES ('PG13', 'Детям до 13 просмотр не желателен');
 INSERT INTO mpa(name,description) VALUES ('R', 'Детям до 17 рекомендуется смотреть в присутствии взрослых');
 INSERT INTO mpa(name,description) VALUES ('NC17', 'Лицам до 18 просмотр запрещен');
-INSERT INTO friendship_type(name) VALUES ('friend');
 INSERT INTO friendship_type(name) VALUES ('follower');
+INSERT INTO friendship_type(name) VALUES ('friend');

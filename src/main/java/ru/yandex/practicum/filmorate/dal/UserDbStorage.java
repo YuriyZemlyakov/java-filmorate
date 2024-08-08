@@ -60,7 +60,7 @@ public class UserDbStorage implements UserStorage {
     public User getUser(Long userId) {
         User user = new User();
         String queryForUser = "SELECT * FROM users WHERE ID = ?";
-        String queryForFriends = "SELECT * FROM friends WHERE USER1ID = ?";
+        String queryForFriends = "SELECT user_id FROM friends WHERE friend_id = ?";
         user = jdbc.queryForObject(queryForUser,userRowMapper,userId);
         Collection<Long> friends = jdbc.queryForList(queryForFriends,Long.class,userId );
         user.setFriends(new HashSet<>(friends));

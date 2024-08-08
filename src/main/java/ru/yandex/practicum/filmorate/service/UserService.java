@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dal.FriendDbStorage;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -19,9 +20,11 @@ import java.util.stream.Collectors;
 public class UserService {
     @Qualifier("dbUserStorage")
     private final UserStorage userStorage;
+    private final FriendDbStorage friendDbStorage;
 
-    public UserService(UserStorage userStorage) {
+    public UserService(UserStorage userStorage, FriendDbStorage friendDbStorage) {
         this.userStorage = userStorage;
+        this.friendDbStorage = friendDbStorage;
     }
 
     public User addUser(User newUser) {
@@ -53,31 +56,33 @@ public class UserService {
         return userStorage.getUser((userId));
     }
 
-    public void addFriend(Long userId1, Long userId2) {
-        userNotNullValidate(userId1);
-        userNotNullValidate(userId2);
-        User user1 = userStorage.getUser(userId1);
-        User user2 = userStorage.getUser(userId2);
-        if (user1.getFriends().contains(userId2)) {
-            throw new NotFoundException("Друг с таким id уже добавлен");
+    public void addFriend(Long userId, Long friendId) {
+        userNotNullValidate(userId);
+        userNotNullValidate(friendId);
+        User user = userStorage.getUser(userId);
+        User friend = userStorage.getUser(friendId);
+        int friendshipType = 1; //запрос на подписку
+        if (user.getFriends().contains(friendId)) {
+            friendshipType = 2;  //подтверждение дружбы
         }
-        user1.getFriends().add(userId2);
-
-        if (user2.getFriends().contains(userId1)) {
-            throw new NotFoundException("Друг с таким id уже добавлен");
-        }
-        user2.getFriends().add(userId1);
+        friendDbStorage.addFriend(userId,friendId,friendshipType);
 
 
     }
 
-    public void deleteFriend(Long userId1, Long userId2) {
-        userNotNullValidate(userId1);
-        userNotNullValidate(userId2);
-        User user1 = userStorage.getUser(userId1);
-        User user2 = userStorage.getUser(userId2);
-        user1.getFriends().remove(userId2);
-        user2.getFriends().remove(userId1);
+    public void deleteFriend(Long userId, Long friendId) {
+        userNotNullValidate(userId);
+        userNotNullValidate(friendId);
+        User user = userStorage.getUser(userId);
+        User friend = userStorage.getUser(friendId);
+        if (!user.getFriends().contains(friendId)) {
+            throw new NotFoundException("Друга с таким id не найдено");
+        }
+        int friendshipType = 1;
+        if (friend.getFriends().contains(userId)) {
+            friendshipType = 2;
+        }
+        friendDbStorage.deleteFriend(userId,friendId,friendshipType);
     }
 
     public List<User> getFriends(long userId) {
