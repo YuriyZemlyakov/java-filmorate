@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.ast.Not;
 import org.hibernate.JDBCException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -49,8 +50,9 @@ public class FilmService {
 
     public Film addFilm(FilmRequestDto newFilm) {
         log.info("Загружаем и валидируем фильм из json");
-        FilmValidator.validateFilm(newFilm);
         genreExistsValidate( newFilm.getGenres());
+        mpaExistsValidate(newFilm.getMpa());
+        FilmValidator.validateFilm(newFilm);
         getMpaById(newFilm.getMpa().getId());
         if(newFilm.getGenres()!= null) {
             newFilm.getGenres().stream()
@@ -141,12 +143,27 @@ public class FilmService {
         }
     }
     private void genreExistsValidate(List<GenreDto> genres) {
-       Optional<GenreDto> failedGenre = genres.stream()
-                .filter(genre -> getGenreById(genre.getId()) == null)
-                .findFirst();
-       if (failedGenre.isPresent()) {
-           throw new ValidationException("Жанра не существует");
+
+        if (genres != null) {
+            Optional<GenreDto> failedGenre = null;
+            try {
+                failedGenre = genres.stream()
+                        .filter(genre -> getGenreById(genre.getId()) == null)
+                        .findFirst();
+            } catch (NotFoundException e) {
+                throw new ValidationException("Некорректно значение id жанра");
+            }
+           if (failedGenre.isPresent()) {
+               throw new ValidationException("Жанра не существует");
+           }
        }
+    }
+    private void mpaExistsValidate(MpaDto mpa) {
+        try {
+            getMpaById(mpa.getId());
+        } catch (NotFoundException e) {
+            throw new ValidationException("mpa с таким id нет");
+        }
     }
 
 

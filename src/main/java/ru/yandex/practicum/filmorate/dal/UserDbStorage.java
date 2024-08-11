@@ -1,10 +1,13 @@
 package ru.yandex.practicum.filmorate.dal;
 
+import org.hibernate.JDBCException;
 import org.springframework.context.annotation.Primary;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.mappers.UserRowMapper;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -61,7 +64,11 @@ public class UserDbStorage implements UserStorage {
         User user = new User();
         String queryForUser = "SELECT * FROM users WHERE ID = ?";
         String queryForFriends = "SELECT user_id FROM friends WHERE friend_id = ?";
-        user = jdbc.queryForObject(queryForUser,userRowMapper,userId);
+        try {
+            user = jdbc.queryForObject(queryForUser, userRowMapper, userId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException ("Не удалось выполнить запрос");
+        }
         Collection<Long> friends = jdbc.queryForList(queryForFriends,Long.class,userId );
         user.setFriends(new HashSet<>(friends));
         return user;
