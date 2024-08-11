@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import ru.yandex.practicum.filmorate.dto.FilmRequestDto;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
@@ -9,7 +10,7 @@ public interface FilmStorage {
 
     void delete(Long filmId);
 
-    Film update(Film editedFilm);
+    Film update(Film film);
 
     Long getNextId();
 

@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.validator;
 
 import lombok.extern.slf4j.Slf4j;
+import ru.yandex.practicum.filmorate.dto.FilmRequestDto;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -8,7 +9,7 @@ import java.time.LocalDate;
 
 @Slf4j
 public class FilmValidator {
-    public static boolean validateFilm(Film film) {
+    public static boolean validateFilm(FilmRequestDto film) {
         boolean isValidationSuccess = false;
         if (film.getName().isBlank() || film.getName() == null) {
             String errorMessage = "Название фильма не может быть пустым";

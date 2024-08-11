@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.FriendDbStorage;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -40,6 +41,11 @@ public class UserService {
 
     public User updateUser(User editedUser) {
         log.info("Валидируем данные пользователя");
+        try {
+            userNotNullValidate(editedUser.getId());
+        }catch(EmptyResultDataAccessException e) {
+            throw new NotFoundException("Пользователь с таким id не найден");
+        }
         UserValidator.validateUser(editedUser);
         log.info("Сохраняем обновленные данные");
         return userStorage.update(editedUser);
@@ -57,8 +63,16 @@ public class UserService {
     }
 
     public void addFriend(Long userId, Long friendId) {
-        userNotNullValidate(userId);
-        userNotNullValidate(friendId);
+        try {
+            userNotNullValidate(userId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Пользователь с таким id не найден");
+        }
+        try {
+            userNotNullValidate(friendId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Пользователь с таким id не найден");
+        }
         User user = userStorage.getUser(userId);
         User friend = userStorage.getUser(friendId);
         int friendshipType = 1; //запрос на подписку
@@ -75,9 +89,9 @@ public class UserService {
         userNotNullValidate(friendId);
         User user = userStorage.getUser(userId);
         User friend = userStorage.getUser(friendId);
-        if (!user.getFriends().contains(friendId)) {
-            throw new NotFoundException("Друга с таким id не найдено");
-        }
+//        if (!user.getFriends().contains(friendId)) {
+//            throw new NotFoundException("Друга с таким id не найдено");
+//        }
         int friendshipType = 1;
         if (friend.getFriends().contains(userId)) {
             friendshipType = 2;
@@ -85,16 +99,23 @@ public class UserService {
         friendDbStorage.deleteFriend(userId,friendId,friendshipType);
     }
 
-    public List<User> getFriends(long userId) {
-        userNotNullValidate(userId);
+    public List<Long> getFriends(long userId) {
+        try {
+            userNotNullValidate(userId);
+        } catch(EmptyResultDataAccessException e) {
+            throw new NotFoundException("Пользователь с таким id не найден");
+        }
         return userStorage.getUser(userId).getFriends().stream()
-                .map(friendId -> userStorage.getUser(friendId))
                 .collect(Collectors.toList());
     }
 
     public List<User> getCommonFriends(long userId1, long userId2) {
-        userNotNullValidate(userId1);
-        userNotNullValidate(userId2);
+        try {
+            userNotNullValidate(userId1);
+            userNotNullValidate(userId2);
+        } catch(EmptyResultDataAccessException e) {
+            throw new NotFoundException("Пользователь с таким id не найден");
+        }
         return userStorage.getUser(userId1).getFriends().stream()
                 .filter(friendId -> userStorage.getUser(userId2).getFriends().contains(friendId))
                 .map(userId -> userStorage.getUser(userId))

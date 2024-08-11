@@ -24,7 +24,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends")
-    public Collection<User> getFriends(@PathVariable Long id) {
+    public Collection<Long> getFriends(@PathVariable Long id) {
         return userService.getFriends(id);
     }
 
@@ -43,7 +43,7 @@ public class UserController {
         return userService.updateUser(editedUser);
     }
 
-    @PutMapping("/{id}/friends/{friendId}")
+    @PutMapping("/{friendId}/friends/{id}")
     public void addFriend(@PathVariable long id, @PathVariable long friendId) {
         userService.addFriend(id, friendId);
     }
