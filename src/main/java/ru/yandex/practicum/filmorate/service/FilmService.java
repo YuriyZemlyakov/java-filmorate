@@ -1,13 +1,10 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.ast.Not;
-import org.hibernate.JDBCException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.ClassifierDbStorage;
-import ru.yandex.practicum.filmorate.dal.FilmDbStorage;
 import ru.yandex.practicum.filmorate.dal.LikesDbStorage;
 import ru.yandex.practicum.filmorate.dto.FilmRequestDto;
 import ru.yandex.practicum.filmorate.dto.GenreDto;
@@ -25,7 +22,6 @@ import ru.yandex.practicum.filmorate.validator.FilmValidator;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -50,15 +46,15 @@ public class FilmService {
 
     public Film addFilm(FilmRequestDto newFilm) {
         log.info("Загружаем и валидируем фильм из json");
-        genreExistsValidate( newFilm.getGenres());
+        genreExistsValidate(newFilm.getGenres());
         mpaExistsValidate(newFilm.getMpa());
         FilmValidator.validateFilm(newFilm);
         getMpaById(newFilm.getMpa().getId());
-        if(newFilm.getGenres()!= null) {
+        if (newFilm.getGenres() != null) {
             newFilm.getGenres().stream()
                     .peek(g -> getGenreById(g.getId()));
         }
-            return filmStorage.add((FilmMapper.dtoToFilm(newFilm)));
+        return filmStorage.add((FilmMapper.dtoToFilm(newFilm)));
 
     }
 
@@ -74,14 +70,14 @@ public class FilmService {
     public void addLike(Long filmId, Long userId) {
         filmNotNullValidate(filmId);
         userNonNullValidate(userId);
-        likesDbStorage.addLike(filmId,userId);
+        likesDbStorage.addLike(filmId, userId);
         log.trace(String.format("Лайк от пользователя {} добавлен фильму {}", userId, filmId));
     }
 
     public void deleteLike(Long filmId, Long userId) {
         filmNotNullValidate(filmId);
         userNonNullValidate(userId);
-        likesDbStorage.deleteLike(filmId,userId);
+        likesDbStorage.deleteLike(filmId, userId);
         log.trace("Лайк пользователя {} фильму {} удален", userId, filmId);
     }
 
@@ -95,9 +91,11 @@ public class FilmService {
     public Collection<Film> getAllFilms() {
         return filmStorage.getAllFilms();
     }
+
     public void deleteFilm(long filmId) {
         filmStorage.delete(filmId);
     }
+
     public Film getFilmById(long filmId) {
         try {
             filmNotNullValidate(filmId);
@@ -109,9 +107,11 @@ public class FilmService {
         film.setMpa(mpa);
         return film;
     }
+
     public List<Genre> getAllGenres() {
         return classifierDbStorage.getAllGenres();
     }
+
     public Genre getGenreById(int genreId) {
         try {
             return classifierDbStorage.getGenreById(genreId);
@@ -120,13 +120,15 @@ public class FilmService {
         }
 
     }
+
     public List<Mpa> getAllMpa() {
         return classifierDbStorage.getAllMpa();
     }
+
     public Mpa getMpaById(int mpaId) {
         try {
             return classifierDbStorage.getMpaById(mpaId);
-        } catch(EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("mpa с таким id не найдено");
         }
     }
@@ -142,6 +144,7 @@ public class FilmService {
             throw new NotFoundException("Пользователь с таким id  не найден");
         }
     }
+
     private void genreExistsValidate(List<GenreDto> genres) {
 
         if (genres != null) {
@@ -153,11 +156,12 @@ public class FilmService {
             } catch (NotFoundException e) {
                 throw new ValidationException("Некорректно значение id жанра");
             }
-           if (failedGenre.isPresent()) {
-               throw new ValidationException("Жанра не существует");
-           }
-       }
+            if (failedGenre.isPresent()) {
+                throw new ValidationException("Жанра не существует");
+            }
+        }
     }
+
     private void mpaExistsValidate(MpaDto mpa) {
         try {
             getMpaById(mpa.getId());

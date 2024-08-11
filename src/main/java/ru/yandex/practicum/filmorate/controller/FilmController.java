@@ -3,16 +3,11 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.FilmRequestDto;
-import ru.yandex.practicum.filmorate.dto.GenreDto;
-import ru.yandex.practicum.filmorate.dto.MpaDto;
-import ru.yandex.practicum.filmorate.dtoMappers.FilmMapper;
-import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.IdFilmComparator;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -33,20 +28,16 @@ public class FilmController {
                 .sorted(new IdFilmComparator())
                 .collect(Collectors.toList());
     }
+
     @GetMapping("/{filmId}")
     public Film getFilmById(@PathVariable long filmId) {
         return filmService.getFilmById(filmId);
     }
 
-
     @GetMapping("/popular")
     public Collection<Film> getMostLikedFilms(@RequestParam(required = false, defaultValue = "10") int count) {
         return filmService.getMostLikedFilmes(count);
     }
-
-
-
-
 
     @PostMapping
     public Film create(@RequestBody FilmRequestDto newFilm) {
@@ -64,9 +55,10 @@ public class FilmController {
     }
 
     @DeleteMapping("/delete/{filmId}")
-    public void deleteFilm( @PathVariable long filmId) {
+    public void deleteFilm(@PathVariable long filmId) {
         filmService.deleteFilm(filmId);
     }
+
     @DeleteMapping("/{id}/like/{userId}")
     public void deleteLike(@PathVariable long id, @PathVariable long userId) {
         filmService.deleteLike(id, userId);

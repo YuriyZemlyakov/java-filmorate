@@ -4,13 +4,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.mappers.GenreRowMapper;
 import ru.yandex.practicum.filmorate.dal.mappers.MpaRowMapper;
-import ru.yandex.practicum.filmorate.dto.GenreDto;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Repository("ClassifierDbStorage")
 public class ClassifierDbStorage {
@@ -23,22 +20,26 @@ public class ClassifierDbStorage {
         this.genreRowMapper = genreRowMapper;
         this.mpaRowMapper = mpaRowMapper;
     }
-    public List<Genre> getAllGenres(){
+
+    public List<Genre> getAllGenres() {
         String query = "SELECT * FROM genre";
         List<Genre> genreList = jdbc.query(query, genreRowMapper);
         return genreList;
     }
+
     public Genre getGenreById(int genreId) {
         String query = "SELECT * FROM genre WHERE id = ?";
-        return jdbc.queryForObject(query,genreRowMapper,genreId);
+        return jdbc.queryForObject(query, genreRowMapper, genreId);
     }
+
     public Mpa getMpaById(int mpaId) {
         String query = "SELECT * FROM mpa WHERE id = ?";
-        return jdbc.queryForObject(query,mpaRowMapper,mpaId);
+        return jdbc.queryForObject(query, mpaRowMapper, mpaId);
     }
+
     public List<Mpa> getAllMpa() {
         String query = "SELECT * FROM mpa";
-        return jdbc.query(query,mpaRowMapper);
+        return jdbc.query(query, mpaRowMapper);
     }
 
 }

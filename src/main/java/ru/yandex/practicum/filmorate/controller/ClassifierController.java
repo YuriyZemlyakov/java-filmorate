@@ -18,18 +18,22 @@ public class ClassifierController {
     public ClassifierController(FilmService filmService) {
         this.filmService = filmService;
     }
+
     @GetMapping("/mpa")
     public List<Mpa> getAllMpa() {
         return filmService.getAllMpa();
     }
+
     @GetMapping("/mpa/{mpaId}")
     public Mpa getMpaById(@PathVariable int mpaId) {
         return filmService.getMpaById(mpaId);
     }
+
     @GetMapping("/genres")
     public List<Genre> getAllGenres() {
         return filmService.getAllGenres();
     }
+
     @GetMapping("/genres/{genreId}")
     public Genre getGenreById(@PathVariable int genreId) {
         return filmService.getGenreById(genreId);

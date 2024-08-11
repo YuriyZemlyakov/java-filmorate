@@ -20,11 +20,12 @@ public class FilmMapper {
         dto.setMpa(MpaMapper.mpaToDto(film.getMpa()));
         List<Genre> genreList = film.getGenres();
         List<GenreDto> listDto = film.getGenres().stream()
-                        .map(g -> GenreMapper.genreToDto(g))
-                                .collect(Collectors.toList());
+                .map(g -> GenreMapper.genreToDto(g))
+                .collect(Collectors.toList());
         dto.setGenres(listDto);
         return dto;
     }
+
     public static Film dtoToFilm(FilmRequestDto dto) {
         Film film = new Film();
         film.setId(dto.getId());

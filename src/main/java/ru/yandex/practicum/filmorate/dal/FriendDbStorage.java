@@ -10,6 +10,7 @@ public class FriendDbStorage {
     public FriendDbStorage(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
     }
+
     public void addFriend(long userId, long friendId, int friendshipType) {
         String query = "INSERT INTO friends(user_id, friend_id, friendship_type) VALUES(?,?,?)";
         jdbc.update(query, userId, friendId, friendshipType);

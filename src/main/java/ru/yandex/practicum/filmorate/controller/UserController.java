@@ -2,10 +2,13 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.dto.UserDto;
+import ru.yandex.practicum.filmorate.dtoMappers.UserMapper;
+import ru.yandex.practicum.filmorate.model.Friend;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -19,28 +22,34 @@ public class UserController {
 
 
     @GetMapping
-    public Collection<User> getAllUsers() {
-        return userService.getAllUsers();
+    public Collection<UserDto> getAllUsers() {
+        return userService.getAllUsers().stream()
+                .map(user -> UserMapper.userToDto(user))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}/friends")
-    public Collection<Long> getFriends(@PathVariable Long id) {
-        return userService.getFriends(id);
+    public Collection<Friend> getFriends(@PathVariable Long id) {
+        return userService.getFriends(id).stream()
+                .map(i -> new Friend(i))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public Collection<User> getCommonFriends(@PathVariable long id, @PathVariable long otherId) {
-        return userService.getCommonFriends(id, otherId);
+    public Collection<UserDto> getCommonFriends(@PathVariable long id, @PathVariable long otherId) {
+        return userService.getCommonFriends(id, otherId).stream()
+                .map(user -> UserMapper.userToDto(user))
+                .collect(Collectors.toList());
     }
 
     @PostMapping
-    public User create(@RequestBody User newUser) {
-        return userService.addUser(newUser);
+    public UserDto create(@RequestBody UserDto newUser) {
+        return UserMapper.userToDto(userService.addUser(UserMapper.dtoToUser(newUser)));
     }
 
     @PutMapping
-    public User updateUser(@RequestBody User editedUser) {
-        return userService.updateUser(editedUser);
+    public UserDto updateUser(@RequestBody UserDto editedUser) {
+        return UserMapper.userToDto(userService.updateUser(UserMapper.dtoToUser(editedUser)));
     }
 
     @PutMapping("/{friendId}/friends/{id}")

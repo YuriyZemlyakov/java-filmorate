@@ -11,9 +11,7 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validator.UserValidator;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,13 +41,14 @@ public class UserService {
         log.info("Валидируем данные пользователя");
         try {
             userNotNullValidate(editedUser.getId());
-        }catch(EmptyResultDataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Пользователь с таким id не найден");
         }
         UserValidator.validateUser(editedUser);
         log.info("Сохраняем обновленные данные");
         return userStorage.update(editedUser);
     }
+
     public void deleteUser(Long userId) {
         userNotNullValidate(userId);
         userStorage.delete(userId);
@@ -58,6 +57,7 @@ public class UserService {
     public Collection<User> getAllUsers() {
         return userStorage.getAllUsers();
     }
+
     public User getUser(long userId) {
         return userStorage.getUser((userId));
     }
@@ -79,7 +79,7 @@ public class UserService {
         if (user.getFriends().contains(friendId)) {
             friendshipType = 2;  //подтверждение дружбы
         }
-        friendDbStorage.addFriend(userId,friendId,friendshipType);
+        friendDbStorage.addFriend(userId, friendId, friendshipType);
 
 
     }
@@ -96,13 +96,13 @@ public class UserService {
         if (friend.getFriends().contains(userId)) {
             friendshipType = 2;
         }
-        friendDbStorage.deleteFriend(userId,friendId,friendshipType);
+        friendDbStorage.deleteFriend(userId, friendId, friendshipType);
     }
 
     public List<Long> getFriends(long userId) {
         try {
             userNotNullValidate(userId);
-        } catch(EmptyResultDataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Пользователь с таким id не найден");
         }
         return userStorage.getUser(userId).getFriends().stream()
@@ -113,7 +113,7 @@ public class UserService {
         try {
             userNotNullValidate(userId1);
             userNotNullValidate(userId2);
-        } catch(EmptyResultDataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Пользователь с таким id не найден");
         }
         return userStorage.getUser(userId1).getFriends().stream()

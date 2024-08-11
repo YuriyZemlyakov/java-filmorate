@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.dal;
 
-import org.hibernate.JDBCException;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,32 +29,32 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User add(User user) {
-            SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbc)
-                    .withTableName("users")
-                    .usingGeneratedKeyColumns("id");
-            Map<String,Object> values = new HashMap<>();
-            values.put("login",user.getLogin());
-            values.put("name", user.getName());
-            values.put("email", user.getEmail());
-            values.put("birthdate", user.getBirthday());
-            Long userId = simpleJdbcInsert.executeAndReturnKey(values).longValue();
-            user.setId(userId);
-            return getUser(userId);
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbc)
+                .withTableName("users")
+                .usingGeneratedKeyColumns("id");
+        Map<String, Object> values = new HashMap<>();
+        values.put("login", user.getLogin());
+        values.put("name", user.getName());
+        values.put("email", user.getEmail());
+        values.put("birthdate", user.getBirthday());
+        Long userId = simpleJdbcInsert.executeAndReturnKey(values).longValue();
+        user.setId(userId);
+        return getUser(userId);
     }
 
     @Override
     public void delete(Long userId) {
-            String sqlQuery = "DELETE FROM users WHERE id = ?";
-            jdbc.update(sqlQuery, userId);
+        String sqlQuery = "DELETE FROM users WHERE id = ?";
+        jdbc.update(sqlQuery, userId);
 
     }
 
     @Override
     public User update(User editedUser) {
-        String query  = "update users set " +
+        String query = "update users set " +
                 "login = ?, name = ?, email = ?, birthdate = ? WHERE id = ?";
-        jdbc.update(query, editedUser.getLogin(),editedUser.getName(), editedUser.getEmail(),
-                editedUser.getBirthday(),editedUser.getId());
+        jdbc.update(query, editedUser.getLogin(), editedUser.getName(), editedUser.getEmail(),
+                editedUser.getBirthday(), editedUser.getId());
         return getUser(editedUser.getId());
     }
 
@@ -67,9 +66,9 @@ public class UserDbStorage implements UserStorage {
         try {
             user = jdbc.queryForObject(queryForUser, userRowMapper, userId);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException ("Не удалось выполнить запрос");
+            throw new NotFoundException("Не удалось выполнить запрос");
         }
-        Collection<Long> friends = jdbc.queryForList(queryForFriends,Long.class,userId );
+        Collection<Long> friends = jdbc.queryForList(queryForFriends, Long.class, userId);
         user.setFriends(new HashSet<>(friends));
         return user;
     }
