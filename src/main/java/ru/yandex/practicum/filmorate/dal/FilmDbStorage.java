@@ -76,7 +76,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Collection<Film> getAllFilms() {
-        String query = "SELECT id FROM films";
+        String query = "SELECT id FROM films ORDER BY id";
         return jdbc.queryForList(query, Long.class).stream()
                 .map(filmId -> getFilm(filmId))
                 .collect(Collectors.toList());
@@ -101,11 +101,6 @@ public class FilmDbStorage implements FilmStorage {
                     .forEach(genre -> jdbc.update(queryForGenreUpdate, editedFilm.getId(), genre.getId()));
         }
         return getFilm(editedFilm.getId());
-    }
-
-    @Override
-    public Long getNextId() {
-        return null;
     }
 
 

@@ -52,7 +52,7 @@ public class FilmService {
         getMpaById(newFilm.getMpa().getId());
         if (newFilm.getGenres() != null) {
             newFilm.getGenres().stream()
-                    .peek(g -> getGenreById(g.getId()));
+                    .forEach(g -> getGenreById(g.getId()));
         }
         return filmStorage.add((FilmMapper.dtoToFilm(newFilm)));
 

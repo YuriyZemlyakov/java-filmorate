@@ -4,11 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.FilmRequestDto;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.IdFilmComparator;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/films")
@@ -24,9 +22,7 @@ public class FilmController {
 
     @GetMapping
     public Collection<Film> getAllFilms() {
-        return filmService.getAllFilms().stream()
-                .sorted(new IdFilmComparator())
-                .collect(Collectors.toList());
+        return filmService.getAllFilms();
     }
 
     @GetMapping("/{filmId}")

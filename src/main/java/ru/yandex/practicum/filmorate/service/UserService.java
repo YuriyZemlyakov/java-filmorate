@@ -89,9 +89,6 @@ public class UserService {
         userNotNullValidate(friendId);
         User user = userStorage.getUser(userId);
         User friend = userStorage.getUser(friendId);
-//        if (!user.getFriends().contains(friendId)) {
-//            throw new NotFoundException("Друга с таким id не найдено");
-//        }
         int friendshipType = 1;
         if (friend.getFriends().contains(userId)) {
             friendshipType = 2;

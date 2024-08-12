@@ -14,7 +14,6 @@ public class FilmRowMapper implements RowMapper<Film> {
     @Override
     public Film mapRow(ResultSet rs, int rowNum) throws SQLException {
         Film film = new Film();
-        Genre genre = new Genre();
         Mpa mpa = new Mpa();
         mpa.setId(rs.getInt("mpa_id"));
         film.setMpa(mpa);

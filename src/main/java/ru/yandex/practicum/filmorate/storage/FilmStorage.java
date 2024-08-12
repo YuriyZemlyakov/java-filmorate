@@ -11,8 +11,6 @@ public interface FilmStorage {
 
     Film update(Film film);
 
-    Long getNextId();
-
     Collection<Film> getAllFilms();
 
     Film getFilm(Long filmId);
