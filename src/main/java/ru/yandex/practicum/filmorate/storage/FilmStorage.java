@@ -9,9 +9,7 @@ public interface FilmStorage {
 
     void delete(Long filmId);
 
-    Film update(Film editedFilm);
-
-    Long getNextId();
+    Film update(Film film);
 
     Collection<Film> getAllFilms();
 
